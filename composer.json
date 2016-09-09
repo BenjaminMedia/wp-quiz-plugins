@@ -1,0 +1,24 @@
+{
+  "config": {
+      "secure-http": false
+    },
+  "repositories": [
+  	{
+      "type": "composer",
+      "url": "http://wpackagist.org"
+    }
+  ],
+  "require": {
+  	"wpackagist-plugin/gravitate-event-tracking": "1.4.1",
+    "wpackagist-plugin/landing-pages": "2.2.9",
+    "wpackagist-plugin/my-custom-functions": "3.1",
+    "wpackagist-plugin/post-snippets": "2.5.3",
+    "wpackagist-plugin/loco-translate": "2.0.5",
+    "wpackagist-plugin/facebook-conversion-pixel": "1.3.4"
+  },
+  "extra": {
+    "installer-paths":{
+      "{$name}/": ["type:wordpress-plugin"]
+    }
+  }
+}
