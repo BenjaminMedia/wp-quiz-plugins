@@ -1,4 +1,9 @@
 {
+  "name": "benjaminmedia/wp-quiz-plugins",
+  "description": "WP plugins for Quiz sites",
+  "type": "wordpress-plugin",
+  "keywords": ["wordpress", "plugin"],
+  "homepage": "https://github.com/BenjaminMedia/wp-quiz-plugins/",
   "config": {
       "secure-http": false
     },
