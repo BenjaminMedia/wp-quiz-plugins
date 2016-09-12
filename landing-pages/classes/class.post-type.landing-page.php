@@ -353,7 +353,7 @@ if ( !class_exists('Landing_Pages_Post_Type') ) {
             if ( !class_exists('Inbound_Pro_Plugin')){
                 $this_path = LANDINGPAGES_PATH;
                 $this_path = explode('wp-content', $this_path);
-                $this_path = "wp-content" . $this_path[1];
+                $this_path = get_site_url(null, 'wp-load.php');
             } else {
                 $this_path = INBOUND_PRO_PATH;
                 $this_path = explode('wp-content', $this_path);
