@@ -89,7 +89,7 @@ $lang = $wpdata['lang'];
       $whoareyou = "Kerro hieman itsestäsi, niin saat tuloksen!";
       $facebookfill = "Täytä facebookissa";
       $fbbutton = plugins_url( '/img/fb_dk', __FILE__ );
-      $sharelabel = "Jakaa tulokset ystäviesi kanssa…";
+      $sharelabel = "Jaa tulos kavereillesi…";
       // Social Share Box 
 	// —— PERSO
 	$wpvq_share_perso_local 	=  (isset($wpvq_options['wpvq_text_field_share_local_PERSO']) && !empty($wpvq_options['wpvq_text_field_share_local_PERSO'])) ? $wpvq_options['wpvq_text_field_share_local_PERSO'] : WPVQ_SHARE_PERSO_LOCAL;
@@ -103,7 +103,7 @@ $lang = $wpdata['lang'];
 	$wpvq_share_trivia_fb_desc 	=  (isset($wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_fi']) && !empty($wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_fi'])) ? $wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_fi'] : WPVQ_SHARE_TRIVIA_FB_DESC;
       break;
     case "no":
-      $whoareyou = "Fortell litt om deg selv, så får du se resultatet!";
+      $whoareyou = "Fortell litt om deg selv, så får du resultatet!";
       $facebookfill = "Fyll ut med facebook";
       $fbbutton = plugins_url( '/img/fb_no', __FILE__ );
       $sharelabel = "Del resultatet med vennene dine…";
@@ -120,10 +120,10 @@ $lang = $wpdata['lang'];
 	$wpvq_share_trivia_fb_desc 	=  (isset($wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_no']) && !empty($wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_no'])) ? $wpvq_options['wpvq_text_field_share_facebook_desc_TRIVIA_no'] : WPVQ_SHARE_TRIVIA_FB_DESC;
       break;
     case "se":
-      $whoareyou = "Berätta lite om dig själv, då får resultatet!";
+      $whoareyou = "Berätta lite om dig själv, så får du ett resultat!";
       $facebookfill = "Fyll i med facebook";
       $fbbutton = plugins_url( '/img/fb_dk', __FILE__ );
-      $sharelabel = "Dela resultaten med dina vänner…";
+      $sharelabel = "Dela resultatet med dina vänner…";
       // Social Share Box 
 	// —— PERSO
 	$wpvq_share_perso_local 	=  (isset($wpvq_options['wpvq_text_field_share_local_PERSO']) && !empty($wpvq_options['wpvq_text_field_share_local_PERSO'])) ? $wpvq_options['wpvq_text_field_share_local_PERSO'] : WPVQ_SHARE_PERSO_LOCAL;
