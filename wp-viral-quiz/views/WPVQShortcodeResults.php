@@ -191,13 +191,13 @@
 $lang2 = $wpdata['lang'];
   switch ($lang2){
     case "fi":
-      $sharelabel = "Jakaa tulokset ystäviesi kanssa…";
+      $sharelabel = "Jaa tulos kavereillesi…";
       break;
     case "no":
       $sharelabel = "Del resultatet med vennene dine…";
       break;
     case "se":
-      $sharelabel = "Dela resultaten med dina vänner…";
+      $sharelabel = "Dela resultatet med dina vänner…";
       break;        
     default:
       $sharelabel = "Del resultatet med dine venner…";
