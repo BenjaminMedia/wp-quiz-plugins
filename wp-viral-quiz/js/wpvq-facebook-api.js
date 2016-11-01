@@ -149,10 +149,10 @@ for (var i = 0, len = permarray.length; i < len; i++) {
          } else {
               eval("perm=response." + permarray[i] + ".min");
          } 
-         jQuery("." + permarray[i]).val(perm);
+         jQuery("." + permarray[i]).val(perm).trigger('change');
       } else {
       if (!response.picture.data.is_silhouette) {
-          jQuery('.picture').val(response.picture.data.url);
+          jQuery('.picture').val(response.picture.data.url).trigger('change');
       }
      }
 }
