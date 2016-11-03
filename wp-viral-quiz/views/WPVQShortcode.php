@@ -88,7 +88,7 @@ $lang = $wpdata['lang'];
     case "fi":
       $whoareyou = "Kerro hieman itsestäsi, niin saat tuloksen!";
       $facebookfill = "Täytä facebookissa";
-      $fbbutton = plugins_url( '/img/fb_dk', __FILE__ );
+      $fbbutton = plugins_url( '/img/fb_fi', __FILE__ );
       $sharelabel = "Jaa tulos kavereillesi…";
       // Social Share Box 
 	// —— PERSO
@@ -122,7 +122,7 @@ $lang = $wpdata['lang'];
     case "se":
       $whoareyou = "Berätta lite om dig själv, så får du ett resultat!";
       $facebookfill = "Fyll i med facebook";
-      $fbbutton = plugins_url( '/img/fb_dk', __FILE__ );
+      $fbbutton = plugins_url( '/img/fb_se', __FILE__ );
       $sharelabel = "Dela resultatet med dina vänner…";
       // Social Share Box 
 	// —— PERSO
