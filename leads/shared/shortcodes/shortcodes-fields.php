@@ -9,12 +9,12 @@ if ( !class_exists('Inbound_Shortcodes_Fields') ) {
 		$path_to_wp = get_home_path();
 		if ( ! file_exists( $path_to_wp . '/wp-load.php' ) ) {
 	} else {*/
-		$path_to_file = explode( 'wp-content', __FILE__ );
+		$path_to_file = explode( 'content', __FILE__ );
 		$path_to_wp = $path_to_file[0];
 	/*}*/
 
 
-	require_once( $path_to_wp . '/wp-load.php' );
+	require_once( $path_to_wp . 'cms/wp-load.php' );
 
 	/* 	The Class
 	* 	----------------------------------------------------- */
