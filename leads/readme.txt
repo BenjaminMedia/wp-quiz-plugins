@@ -6,8 +6,8 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: leads, lead capture, lead tracking, lead collection, lead management, crm, crm tools
 Requires at least: 3.8
-Tested up to: 4.5.2
-Stable Tag: 2.1.9
+Tested up to: 4.6.1
+Stable Tag: 2.8.1
 
 Track visitor activity, capture and manage incoming leads, and send collected emails to your email service provider.
 
@@ -84,6 +84,39 @@ We built Lead Management as a framework! You can use our extendable framework to
 4. Get Notified on Lead Conversions
 
 == Changelog ==
+
+= 2.8.1 =
+* [fix] Restore ability to delete leads from lead listing page via bulk actions.
+* [tweak] Maintenance work on Full Contact integration with Lead profile
+* [tweak] Improved UI inside Lead Profile. 
+* [tweak] removing inbound_add_list events from action totals. 
+* [fix] Fixed broken page views in Lead Activity section. Now pulls from inbound_page_views table.
+* [fix] Fixed broken Conversion Paths section. Now pulls from inbound_events table. 
+* [refactor] Now pulling lead sources from inbound_events table
+* [enhancement] Better support for checklist and radio custom fields
+* [enhancement] No lead tracking within admin
+
+= 2.7.8 =
+* [tweak] Adding lead status and lead tags to the Bulk Actions filter
+* [fix] CSV exporting in Bulk Actions
+
+= 2.7.7 =
+* [fix] Fixing "Fatal error: Class ‘Leads_Settings’ not found" error.
+
+= 2.7.3 =
+* [improvement] Adding settings support for Inbound Pro
+* [fix] fixing include file for Inbound Forms when wp-config.php is outside of it's normal location.
+
+= 2.7.0 =
+* Fixing broken 'Bulk Actions' page.
+* Fixing CSV Export Issue.
+
+= 2.6.8 =
+* Updating shared files.
+
+= 2.2.6 =
+* Fixing issue with duplicate leads displaying in Bulk Actions section
+* Better CSS for Lead profile
 
 = 2.2.5 =
 * Added inbound_page_views & now monitoring page view reports.

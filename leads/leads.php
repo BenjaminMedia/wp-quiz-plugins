@@ -4,7 +4,7 @@ Plugin Name: Leads
 Plugin URI: http://www.inboundnow.com/leads/
 Description: Track website visitor activity, manage incoming leads, and send collected emails to your email service provider.
 Author: Inbound Now
-Version: 2.2.5
+Version: 2.8.1
 Author URI: http://www.inboundnow.com/
 */
 
@@ -24,11 +24,11 @@ if ( ! class_exists( 'Inbound_Leads_Plugin' ) ) {
 		*  Setup plugin constants
 		*/
 		private static function define_constants() {
-			define('WPL_CURRENT_VERSION', '2.2.5' );
+			define('WPL_CURRENT_VERSION', '2.8.1' );
 			define('WPL_URLPATH',  plugins_url( '/', __FILE__ ) );
 			define('WPL_PATH', WP_PLUGIN_DIR."/".dirname( plugin_basename( __FILE__ ) ) . '/' );
 			define('WPL_CORE', plugin_basename( __FILE__ ) );
-			define('WPL_SLUG', plugin_basename( dirname(__FILE__) ) );
+			define('WPL_SLUG', 'leads' );
 			define('WPL_FILE',  __FILE__ );
 			define('WPL_STORE_URL', 'http://www.inboundnow.com' );
 			$uploads = wp_upload_dir();
@@ -50,21 +50,21 @@ if ( ! class_exists( 'Inbound_Leads_Plugin' ) ) {
 				include_once( WPL_PATH . 'classes/class.post-type.wp-lead.php');
 				include_once( WPL_PATH . 'classes/class.metaboxes.wp-lead.php');
 				include_once( WPL_PATH . 'classes/class.lead-management.php');
-				include_once( WPL_PATH . 'classes/class.form-integrations.php');
 				include_once( WPL_PATH . 'classes/class.settings.php');
 				include_once( WPL_PATH . 'classes/class.dashboard.php');
 				include_once( WPL_PATH . 'classes/class.tracking.php');
 				include_once( WPL_PATH . 'classes/class.admin-notices.php');
-				include_once( WPL_PATH . 'classes/class.branching.php');
+				//include_once( WPL_PATH . 'classes/class.branching.php');
 				include_once( WPL_PATH . 'classes/class.login.php');
 				include_once( WPL_PATH . 'classes/class.user-profile.php');
 
 			} else {
 				/* Frontend Includes */
+				include_once( WPL_PATH . 'classes/class.settings.php');
 				include_once( WPL_PATH . 'classes/class.post-type.wp-lead.php');
-				include_once( WPL_PATH . 'classes/class.form-integrations.php');
 				include_once( WPL_PATH . 'classes/class.login.php');
 				include_once( WPL_PATH . 'classes/class.tracking.php');
+				include_once( WPL_PATH . 'classes/class.inbound-forms.akismet.php');
 
 			}
 
@@ -119,7 +119,7 @@ if ( ! class_exists( 'Inbound_Leads_Plugin' ) ) {
 		static function fail_php_version() {
 			//add_action( 'plugins_loaded', array( __CLASS__, 'load_text_domain_init' ) );
 			$plugin_url = admin_url( 'plugins.php' );
-			self::notice( __( 'Leads requires PHP version 5.3+ to run. Your version '.PHP_VERSION.' is not high enough.<br><u>Please contact your hosting provider</u> to upgrade your PHP Version.<br>The plugin is NOT Running. You can disable this warning message by <a href="'.$plugin_url.'">deactivating the plugin</a>', 'leads' ) );
+			self::notice( __( 'Leads requires PHP version 5.3+ to run. Your version '.PHP_VERSION.' is not high enough.<br><u>Please contact your hosting provider</u> to upgrade your PHP Version.<br>The plugin is NOT Running. You can disable this warning message by <a href="'.$plugin_url.'">deactivating the plugin</a>', 'inbound-pro' ) );
 		}
 
 		/**

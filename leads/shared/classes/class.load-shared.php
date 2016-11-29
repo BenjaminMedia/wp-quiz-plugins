@@ -55,12 +55,10 @@ if (!class_exists('Inbound_Load_Shared')) {
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.form.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.menus.adminbar.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.debug.php');
-			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.compatibility.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.templating-engine.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.shortcodes.email-template.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.shortcodes.cookie-values.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.lead-fields.php');
-			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.inbound-forms.akismet.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.options-api.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.events.php');
 			include_once( INBOUNDNOW_SHARED_PATH . 'classes/class.lead-storage.php');

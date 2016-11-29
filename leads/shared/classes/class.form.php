@@ -47,7 +47,6 @@ if (!class_exists('Inbound_Forms')) {
                 'submit_bg_color' => ''
             ), $atts));
 
-
             if (!$id && isset($_GET['post'])) {
                 $id = intval($_GET['post']);
             }
@@ -448,10 +447,10 @@ if (!class_exists('Inbound_Forms')) {
                 /* End Loop */
 
                 $current_page = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-                $form .= '<div class="inbound-field ' . $main_layout . ' inbound-submit-area"><button type="submit" class="inbound-button-submit inbound-submit-action" value="' . $submit_button . '" name="send" id="inbound_form_submit" data-ignore-form-field="true" style="' . $submit_bg . $submit_color . $image_button . '">' . $icon_insert . '' . $submit_button . $inner_button . '</button></div><input data-ignore-form-field="true" type="hidden" name="inbound_submitted" value="1">';
+                $form .= '<div class="inbound-field ' . $main_layout . ' inbound-submit-area"><button type="submit" class="inbound-button-submit inbound-submit-action" value="' . $submit_button . '" name="send" id="inbound_form_submit" data-ignore-form-field="true" style="' . $submit_bg . $submit_color . $image_button . 'position:relative;">' . $icon_insert . '' . $submit_button . $inner_button . '</button></div><input data-ignore-form-field="true" type="hidden" name="inbound_submitted" value="1">';
                 /* <!--<input type="submit" '.$submit_button_type.' class="button" value="'.$submit_button.'" name="send" id="inbound_form_submit" />--> */
 
-                $form .= '<input type="hidden" name="inbound_form_n" class="inbound_form_n" value="' . $form_name . '"><input type="hidden" name="inbound_form_lists" id="inbound_form_lists" value="' . $lists . '" data-map-form-field="inbound_form_lists"><input type="hidden" name="inbound_form_id" class="inbound_form_id" value="' . $id . '"><input type="hidden" name="inbound_current_page_url" value="' . $current_page . '"><input type="hidden" name="page_id" value="' . (isset($post->ID) ? $post->ID : '0') . '"><input type="hidden" name="inbound_furl" value="' . base64_encode($redirect) . '"><input type="hidden" name="inbound_notify" value="' . base64_encode($notify) . '"><input type="hidden" class="inbound_params" name="inbound_params" value=""></form></div>';
+                $form .= '<input type="hidden" name="inbound_form_n" class="inbound_form_n" value="' . $form_name . '"><input type="hidden" name="inbound_form_lists" id="inbound_form_lists" value="' . $lists . '" data-map-form-field="inbound_form_lists"><input type="hidden" name="inbound_form_id" class="inbound_form_id" value="' . $id . '"><input type="hidden" name="inbound_current_page_url" value="' . $current_page . '"><input type="hidden" name="page_id" value="' . (isset($post->ID) ? $post->ID : '0') . '"><input type="hidden" name="inbound_furl" value="' . base64_encode(trim($redirect)) . '"><input type="hidden" name="inbound_notify" value="' . base64_encode($notify) . '"><input type="hidden" class="inbound_params" name="inbound_params" value=""></form></div>';
                 $form .= "<style type='text/css'>.inbound-button-submit{ {$font_size} }</style>";
                 $form = preg_replace('/<br class="inbr".\/>/', '', $form); /* remove editor br tags */
 
@@ -529,6 +528,7 @@ if (!class_exists('Inbound_Forms')) {
          */
         static function register_script() {
             wp_enqueue_style('inbound-shortcodes');
+            wp_enqueue_script('spin.min', INBOUNDNOW_SHARED_URLPATH .  '/shortcodes/js/spin.min.js', null, null, true);
         }
 
         /**
@@ -549,70 +549,111 @@ if (!class_exists('Inbound_Forms')) {
                 return;
             }
             /* TODO remove this */
-            echo '<script type="text/javascript">
+            ?>
+            <script type="text/javascript">
+                _inbound.add_action( 'form_before_submission', inbound_additional_checks, 10);
 
-				jQuery(document).ready(function($){
+                function inbound_additional_checks( data ) {
+                    /* make sure event is defined */
+                    if (typeof event == 'undefined') {
+                        var event = {};
+                        event.target = data.event;
+                    }
 
-					jQuery("form").submit(function(e) {
+                    /* added below condition for check any of checkbox checked or not by kirit dholakiya */
+                    if( jQuery('.checkbox-required')[0] && jQuery('.checkbox-required input[type=checkbox]:checked').length==0) {
+                        jQuery('.checkbox-required input[type=checkbox]:first').focus();
+                        alert("<?php _e('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro') ; ?> ");
+                        throw new Error('<?php _e('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro') ; ?>');
+                    }
 
-						/* added below condition for check any of checkbox checked or not by kirit dholakiya */
-						if( jQuery(\'.checkbox-required\')[0] && jQuery(\'.checkbox-required input[type=checkbox]:checked\').length==0)
-						{
-							jQuery(\'.checkbox-required input[type=checkbox]:first\').focus();
-							alert("' . __('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro') . '");
-							e.preventDefault();
-							e.stopImmediatePropagation();
-						}
-						jQuery(this).find("input").each(function(){
-							if(!jQuery(this).prop("required")){
-							} else if (!jQuery(this).val()) {
-							alert("' . __('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro') . '");
+                    jQuery(this).find("input").each(function(){
+                        if(!jQuery(this).prop("required")){
+                        } else if (!jQuery(this).val()) {
+                            alert("<?php  _e('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro'); ?>");
+                            throw new Error('<?php _e('Oops! Looks like you have not filled out all of the required fields!', 'inbound-pro') ; ?>');
+                        }
+                    });
 
-							e.preventDefault();
-							e.stopImmediatePropagation();
-							return false;
-							}
-						});
-					});
-
-					jQuery("#inbound_form_submit br").remove(); /* remove br tags */
-					function validateEmail(email) {
-
-						var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-						return re.test(email);
-					}
-					var parent_redirect = parent.window.location.href;
-					jQuery("#inbound_parent_page").val(parent_redirect);
-
-
-					/* validate email */
-					jQuery("input.inbound-email").on("change keyup", function (e) {
-						var $this = jQuery(this);
-						var email = $this.val();
-						jQuery(".inbound_email_suggestion").remove();
-						if (validateEmail(email)) {
-							$this.css("color", "green");
-							$this.addClass("inbound-valid-email");
-							$this.removeClass("inbound-invalid-email");
-						} else {
-							$this.css("color", "red");
-							$this.addClass("inbound-invalid-email");
-							$this.removeClass("inbound-valid-email");
-						}
-						if($this.hasClass("inbound-valid-email")) {
-							$this.parent().parent().find("#inbound_form_submit").removeAttr("disabled");
-						}
-					});
-
-					/* Trims whitespace on advancing to the next input */
-					jQuery("input[type=\'text\']").on("blur", function() {
-						var value = jQuery.trim( $(this).val() );
-						jQuery(this).val( value );
-					})
+                    /*Disable button and add spinner to form*/
+                    var target = jQuery(event.target).find("#inbound_form_submit"),
+                        spinnerColor = jQuery(target).css("color"),
+                        buttonWidth = jQuery(target).css("width"),
+                        buttonHeight = jQuery(target).css("height"),
+                        scale = jQuery(target).css("font-size");
+                    scale = scale.replace("px", "");
+                    scale = scale / 40;
 
 
-				});
-				</script>';
+                    /* spinner param setup */
+                    var opts = {
+                        lines: 8 // The number of lines to draw
+                        , length: 0 // The length of each line
+                        , width: 7 // The line thickness
+                        , radius: 25 // The radius of the inner circle
+                        , scale: scale // Scales overall size of the spinner
+                        , corners: 1 // Corner roundness (0..1)
+                        , color: spinnerColor // #rgb or #rrggbb or array of colors
+                        , opacity: 0.25 // Opacity of the lines
+                        , rotate: 0 // The rotation offset
+                        , direction: 1 // 1: clockwise, -1: counterclockwise
+                        , speed: 1 // Rounds per second
+                        , trail: 60 // Afterglow percentage
+                        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+                        , zIndex: 2e9 // The z-index (defaults to 2000000000)
+                        , className: "inbound-form-spinner" // The CSS class to assign to the spinner
+                        , top: "50%" // Top position relative to parent
+                        , left: "50%" // Left position relative to parent
+                        , shadow: false // Whether to render a shadow
+                        , hwaccel: false // Whether to use hardware acceleration
+                        , position: "absolute" // Element positioning
+                    };
+
+                    jQuery(target).prop("disabled",true).html("").css({"width" : buttonWidth, "height" : buttonHeight});
+
+                    var spinner = new Spinner(opts).spin(target[0]);
+
+                }
+
+                /* helper function for validating email */
+                function inboundFormsVaidateEmail(email) {
+                    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    return re.test(email);
+                }
+
+                /* Adding helpful listeners - may need to move all this into the analytics engine */
+                jQuery(document).ready(function($){
+                    /* remove br tags */
+                    jQuery("#inbound_form_submit br").remove();
+
+                    /* validate email */
+                    jQuery("input.inbound-email").on("change keyup", function (e) {
+                        var $this = jQuery(this);
+                        var email = $this.val();
+                        jQuery(".inbound_email_suggestion").remove();
+                        if (inboundFormsVaidateEmail(email)) {
+                            $this.css("color", "green");
+                            $this.addClass("inbound-valid-email");
+                            $this.removeClass("inbound-invalid-email");
+                        } else {
+                            $this.css("color", "red");
+                            $this.addClass("inbound-invalid-email");
+                            $this.removeClass("inbound-valid-email");
+                        }
+                        if($this.hasClass("inbound-valid-email")) {
+                            $this.parent().parent().find("#inbound_form_submit").removeAttr("disabled");
+                        }
+                    });
+
+                    /* Trims whitespace on advancing to the next input */
+                    jQuery("input[type='text']").on("blur", function() {
+                        var value = jQuery.trim( $(this).val() );
+                        jQuery(this).val( value );
+                    })
+
+                });
+            </script>
+            <?php
 
         }
 
@@ -683,63 +724,69 @@ if (!class_exists('Inbound_Forms')) {
          */
         static function do_actions() {
 
-            if (isset($_POST['inbound_submitted']) && $_POST['inbound_submitted'] === '1') {
-                $form_post_data = array();
-                if (isset($_POST['phone_xoxo']) && $_POST['phone_xoxo'] != "") {
-                    wp_die($message = 'Die You spam bastard');
-                    return false;
+            /* only process actions when told to */
+            if (!isset($_POST['inbound_submitted']) || (!$_POST['inbound_submitted'] || $_POST['inbound_submitted'] =='false' ) ) {
+                return;
+            }
+
+            $form_post_data = array();
+            if (isset($_POST['phone_xoxo']) && $_POST['phone_xoxo'] != "") {
+                wp_die($message = 'Die Die Die');
+                return false;
+            }
+            /* get form submitted form's meta data */
+            $form_meta_data = get_post_meta($_POST['inbound_form_id']);
+
+            if (isset($_POST['inbound_furl']) && $_POST['inbound_furl'] != "") {
+                $redirect = base64_decode($_POST['inbound_furl']);
+            } else if (isset($_POST['inbound_current_page_url'])) {
+                $redirect = $_POST['inbound_current_page_url'];
+            } else {
+                $redirect = "";
+            }
+
+
+            /*print_r($_POST); */
+            foreach ($_POST as $field => $value) {
+
+                if (get_magic_quotes_gpc() && is_string($value)) {
+                    $value = stripslashes($value);
                 }
-                /* get form submitted form's meta data */
-                $form_meta_data = get_post_meta($_POST['inbound_form_id']);
 
-                if (isset($_POST['inbound_furl']) && $_POST['inbound_furl'] != "") {
-                    $redirect = base64_decode($_POST['inbound_furl']);
-                } else if (isset($_POST['inbound_current_page_url'])) {
-                    $redirect = $_POST['inbound_current_page_url'];
-                }
+                $field = strtolower($field);
 
-
-                /*print_r($_POST); */
-                foreach ($_POST as $field => $value) {
-
-                    if (get_magic_quotes_gpc() && is_string($value)) {
-                        $value = stripslashes($value);
+                if (preg_match('/Email|e-mail|email/i', $field)) {
+                    $field = "wpleads_email_address";
+                    if (isset($_POST['inbound_form_id']) && $_POST['inbound_form_id'] != "") {
+                        self::store_form_stats($_POST['inbound_form_id'], $value);
                     }
-
-                    $field = strtolower($field);
-
-                    if (preg_match('/Email|e-mail|email/i', $field)) {
-                        $field = "wpleads_email_address";
-                        if (isset($_POST['inbound_form_id']) && $_POST['inbound_form_id'] != "") {
-                            self::store_form_stats($_POST['inbound_form_id'], $value);
-                        }
-                    }
-
-
-                    $form_post_data[$field] = (!is_array($value)) ? strip_tags($value) : $value;
-
-                }
-
-                $form_meta_data['post_id'] = $_POST['inbound_form_id']; /* pass in form id */
-
-                /* Send emails if passes spam check returns false */
-                if (!apply_filters('inbound_check_if_spam', false, $form_post_data)) {
-                    self::send_conversion_admin_notification($form_post_data, $form_meta_data);
-                    self::send_conversion_lead_notification($form_post_data, $form_meta_data);
-
-                    /* hook runs after form actions are completed and before page redirect */
-                    do_action('inboundnow_form_submit_actions', $form_post_data, $form_meta_data);
                 }
 
 
-                /* redirect now */
-                if ($redirect != "") {
-                    $redirect = str_replace('%3F', '/', html_entity_decode($redirect));
-                    wp_redirect($redirect);
-                    exit();
-                }
+                $form_post_data[$field] = (!is_array($value)) ? strip_tags($value) : $value;
 
             }
+
+            $form_meta_data['post_id'] = $_POST['inbound_form_id']; /* pass in form id */
+
+            /* Send emails if passes spam check returns false */
+            if (!apply_filters('inbound_check_if_spam', false, $form_post_data)) {
+                self::send_conversion_admin_notification($form_post_data, $form_meta_data);
+                self::send_conversion_lead_notification($form_post_data, $form_meta_data);
+
+                /* hook runs after form actions are completed and before page redirect */
+                do_action('inboundnow_form_submit_actions', $form_post_data, $form_meta_data);
+            }
+
+
+            /* redirect now */
+            if ($redirect != "") {
+                $redirect = str_replace('%3F', '/', html_entity_decode($redirect));
+                wp_redirect($redirect);
+                exit();
+            }
+
+
 
         }
 
@@ -763,7 +810,7 @@ if (!class_exists('Inbound_Forms')) {
                 }
 
                 /* If there's no notification email in place then bail */
-                if (!isset($form_meta_data['inbound_notify_email'])) {
+                if (!isset($form_meta_data['inbound_notify_email']) || !trim($form_meta_data['inbound_notify_email'])) {
                     return;
                 }
 
@@ -901,9 +948,9 @@ if (!class_exists('Inbound_Forms')) {
             $content = apply_filters('the_content', $content);
             $content = str_replace(']]>', ']]&gt;', $content);
 
-            $confirm_email_message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><meta http-equiv="Content-Type" content="text/html;' . get_option('blog_charset') . '" /></head><body style="margin: 0px; background-color: #F4F3F4; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0"><table cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" border="0"><tr>';
-            $confirm_email_message .= $content;
-            $confirm_email_message .= '</tr></table></body></html>';
+            //$confirm_email_message = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><meta http-equiv="Content-Type" content="text/html;' . get_option('blog_charset') . '" /></head><body style="margin: 0px; background-color: #F4F3F4; font-family: Helvetica, Arial, sans-serif; font-size:12px;" text="#444444" bgcolor="#F4F3F4" link="#21759B" alink="#21759B" vlink="#21759B" marginheight="0" topmargin="0" marginwidth="0" leftmargin="0"><table cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" border="0"><tr>';
+            $confirm_email_message = $content;
+            //$confirm_email_message .= '</tr></table></body></html>';
 
 
             $confirm_subject = apply_filters('inbound_lead_conversion/subject', $confirm_subject, $form_meta_data, $form_post_data);

@@ -8,45 +8,6 @@ if ( !class_exists('Leads_Activation_Update_Routines') ) {
 	class Leads_Activation_Update_Routines {
 
 		/**
-		 * @introduced: 1.5.1
-		 * @migration-type: db modification
-		 * @mirgration: creates wp_inbound_link_tracking table
-		 */
-		public static function create_link_tracking_table() {
-			global $wpdb;
-
-			/* ignore if not applicable */
-			$previous_installed_version = get_transient('leads_current_version');
-
-			if ( version_compare($previous_installed_version , "1.5.1") === 1 )  {
-				return;
-			}
-
-			$table_name = $wpdb->prefix . "inbound_tracked_links";
-
-			$charset_collate = '';
-
-			if ( ! empty( $wpdb->charset ) ) {
-				$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
-			}
-
-			if ( ! empty( $wpdb->collate ) ) {
-				$charset_collate .= " COLLATE {$wpdb->collate}";
-			}
-
-			$sql = "CREATE TABLE $table_name (
-			  `id` mediumint(9) NOT NULL AUTO_INCREMENT,
-			  `token` tinytext NOT NULL,
-			  `args` text NOT NULL,
-			  UNIQUE KEY id (id)
-			) $charset_collate;";
-
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-			dbDelta( $sql );
-
-		}
-
-		/**
 		 * @introduced: 1.1.0
 		 * @migration-type: meta key update
 		 * @mirgration: standardizes meta key from old naming conversion to new naming convention
@@ -107,8 +68,6 @@ if ( !class_exists('Leads_Activation_Update_Routines') ) {
 			}
 		}
 
-
-
 		/**
 		 * @introduced: 2.0.1
 		 * @migration-type: batch lead processing / data migration into inbound_events table
@@ -132,15 +91,20 @@ if ( !class_exists('Leads_Activation_Update_Routines') ) {
 			Inbound_Events::create_events_table();
 
 			/* create flag for batch uploader */
-			add_option(
+			$processing_jobs = get_option('leads_batch_processing');
+			$processing_jobs = ($processing_jobs) ? $processing_jobs : array();
+			$processing_jobs['import_events_table_112015'] = array(
+				'method' => 'import_events_table_112015', 	/* tells batch processor which method to run */
+				'posts_per_page' => 100, 					/* leads per query */
+				'offset' => 0 								/* initial page offset */
+			);
+
+			/* create flag for batch uploader */
+			update_option(
 				'leads_batch_processing', 		/* db option name - lets batch processor know it's needed */
-				array(
-					'method' => 'import_events_table_112015', 	/* tells batch processor which method to run */
-					'posts_per_page' => 100, 					/* leads per query */
-					'offset' => 0 								/* initial page offset */
-				),
+				$processing_jobs,
 				0 , 							/* depreciated leave as 0 */
-				true 							/* autoload true */
+				false 							/* autoload true */
 			);
 
 		}

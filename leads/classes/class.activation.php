@@ -51,7 +51,8 @@ class Leads_Activation {
 	*/
 
 	public static function run_updates() {
-
+		/* remove update_post_meta hook to cut down on resources */
+		remove_action('updated_post_meta', array( 'Leads_Post_Type' , 'record_meta_update'), 10, 4);
 
 		/* Get list of updaters from Leads_Activation_Update_Routines class */
 		$updaters = get_class_methods('Leads_Activation_Update_Routines');
@@ -105,7 +106,7 @@ class Leads_Activation {
 	public static function display_upgrade_routine_notice() {
 		?>
 		<div class="error">
-			<p><?php _e( 'Leads plugin requires a database upgrade. Please note that this could take awhile. ', 'leads' ); ?> <a href='?plugin=leads&plugin_action=upgrade_routines'> <?php _e('Run Upgrade Processes' , 'leads' ); ?></a></p>
+			<p><?php _e( 'Leads plugin requires a database upgrade. Please note that this could take awhile. ', 'inbound-pro' ); ?> <a href='?plugin=leads&plugin_action=upgrade_routines'> <?php _e('Run Upgrade Processes' , 'inbound-pro' ); ?></a></p>
 		</div>
 		<?php
 	}

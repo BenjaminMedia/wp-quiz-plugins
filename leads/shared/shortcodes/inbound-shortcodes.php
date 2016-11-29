@@ -39,7 +39,9 @@ class Inbound_Shortcodes {
 
 		add_action( 'wp_enqueue_scripts',	array(__CLASS__, 'frontend_loads')); // load styles
 		add_shortcode('list', array(__CLASS__, 'inbound_shortcode_list'));
+		add_shortcode('inbound_list', array(__CLASS__, 'inbound_shortcode_list'));
 		add_shortcode('button', array(__CLASS__, 'inbound_shortcode_button'));
+		add_shortcode('inbound_button', array(__CLASS__, 'inbound_shortcode_button'));
 		add_shortcode('social_share',	array(__CLASS__, 'inbound_shortcode_social_links'));
 		//add_action('admin_notices', array(__CLASS__, 'inbound_shortcode_prompt'));
 		//add_action('admin_init', array(__CLASS__, 'inbound_shortcode_prompt_ignore'));
@@ -628,7 +630,7 @@ class Inbound_Shortcodes {
 			?>
 			<div style='display:block; overflow: auto;'>
 				<div id='email-confirm-settings'>
-					<label for="inbound_email_send">Email Confirmation is currently: </label>
+					<label for="inbound_email_send"><?php _e('Email Follow-up' , 'inbound-pro'); ?> </label>
 					<select name="inbound_email_send_notification" id="inbound_email_send_notification">
 						<option value="off" <?php selected( $selected, 'off' ); ?>>Off</option>
 						<option value="on" <?php selected( $selected, 'on' ); ?>>On</option>

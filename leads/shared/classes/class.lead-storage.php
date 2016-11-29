@@ -77,11 +77,7 @@ if (!class_exists('LeadStorage')) {
 			$lead['source'] = self::check_val('source', $args);
 			$lead['ip_address'] = self::lookup_ip_address();
 
-			if($lead['mapped_params']){
-				parse_str($lead['mapped_params'], $mappedData);
-			} else {
-				$mappedData = array();
-			}
+
 
 			if($lead['raw_params']){
 				parse_str($lead['raw_params'], $raw_params);
@@ -89,7 +85,14 @@ if (!class_exists('LeadStorage')) {
 				$raw_params = array();
 			}
 
-			$mappedData = self::improve_mapping($mappedData, $lead);
+			if($lead['mapped_params']){
+				parse_str($lead['mapped_params'], $mappedData);
+			} else {
+				$mappedData = array();
+			}
+
+			$mappedData = self::improve_mapping($mappedData, $lead , $args);
+			$lead = array_merge($lead ,$mappedData);
 
 			/* prepate lead lists */
 			$lead['lead_lists'] = (isset($args['lead_lists'])) ? $args['lead_lists'] : null;
@@ -129,7 +132,9 @@ if (!class_exists('LeadStorage')) {
 					$Inbound_Leads->add_lead_to_list($lead['id'], $lead['lead_lists']);
 
 					/* store lead list cookie */
-					Leads_Tracking::cookie_lead_lists($lead['id']);
+					if (class_exists('Leads_Tracking')) {
+						Leads_Tracking::cookie_lead_lists($lead['id']);
+					}
 				}
 
 
@@ -150,9 +155,19 @@ if (!class_exists('LeadStorage')) {
 					self::store_search_history($lead);
 				}
 
-				/* Store ConversionData */
-				if ( isset($lead['page_id']) && $lead['page_id']  ) {
-					self::store_conversion_data($lead);
+				/* attempt to determine page id that refered lead */
+				if (!isset($lead['page_id']) || !$lead['page_id']) {
+					$referer = wp_get_referer();
+					$referer = ($referer) ? $referer : $_SERVER['HTTP_REFERER'];
+					$page_id = url_to_postid($referer);
+					if ($page_id) {
+						$lead['page_id'] = $page_id;
+					}
+				}
+
+				/* Store Legacy Conversion Data to LANDING PAGE/CTA DATA	*/
+				if (isset($lead['page_id']) && $lead['page_id'] ) {
+					self::store_conversion_stats($lead);
 				}
 
 				/* Store Lead Source */
@@ -189,6 +204,13 @@ if (!class_exists('LeadStorage')) {
 					$lead['form_name'] = $raw_params['inbound_form_n'];
 				}
 
+				/* update lead id cookie */
+				setcookie('wp_lead_id', $lead['id'] , time() + (20 * 365 * 24 * 60 * 60), '/');
+
+				/* set unset pageviews to lead using lead_uid */
+				self::update_pageviews($lead);
+
+				/* send data back and perform action hooks */
 				if ( self::$is_ajax ) {
 					echo $lead['id'];
 					do_action('inbound_store_lead_post', $lead );
@@ -275,7 +297,7 @@ if (!class_exists('LeadStorage')) {
 
 
 				/* update custom field options for dropdown */
-				if (isset($field['type']) == 'dropdown' ) {
+				if (isset($field['type']) && $field['type']== 'dropdown' ) {
 					$options = $inbound_settings['leads-custom-fields']['fields'][ $key ][ 'options' ];
 
 					if ( !isset($options[ $value ]) ) {
@@ -440,6 +462,38 @@ if (!class_exists('LeadStorage')) {
 		}
 
 		/**
+		 * Associates prior unassociated pageviews with lead id
+		 */
+		public static function update_pageviews( $lead ) {
+			global $wpdb;
+
+			$table_name = $wpdb->prefix . "inbound_page_views";
+			$lead_uid_cookie = (isset($_COOKIE["wp_lead_uid"])) ? $_COOKIE["wp_lead_uid"] : '';
+			$args = array(
+				'lead_id' => $lead['id'],
+			);
+
+			$array = array(
+				'lead_id' => 0,
+				'lead_uid' => (isset($lead['wp_lead_uid'])) ? $lead['wp_lead_uid'] :  $lead_uid_cookie
+			);
+
+			/* update inbound_page_view page view records associated with lead */
+			$wpdb->update(
+				$table_name,
+				$args,
+				array(
+					'lead_id' => 0,
+					'lead_uid' => (isset($lead['wp_lead_uid'])) ? $lead['wp_lead_uid'] :  $lead_uid_cookie
+				),
+				array(
+					'%d',
+					'%d'
+				)
+			);
+		}
+
+		/**
 		 *	Connects to geoplugin.net and gets data on IP address and sets it into historical log
 		 *	@param ARRAY $lead_data
 		 */
@@ -575,14 +629,14 @@ if (!class_exists('LeadStorage')) {
 		/**
 		 *	Uses mapped data if not programatically set
 		 */
-		static function improve_mapping($mappedData, $lead) {
+		static function improve_mapping($mappedData, $lead , $args) {
 
 			/* check to see if there are any mapped values arriving through inbound_store_lead */
 			$fields = Leads_Field_Map::build_map_array();
 
 			foreach ($fields as $key => $label ) {
-				if( isset( $lead[ $key ]) && !isset($mappedData[$key]) ) {
-					$mappedData[$key] =  $lead[ $key ];
+				if( isset( $args[ $key ]) && !isset($mappedData[$key]) ) {
+					$mappedData[$key] =  $args[ $key ];
 				}
 			}
 
@@ -696,13 +750,6 @@ if (!function_exists('inbound_store_lead')) {
 		/* wpleads_email_address becomes wpleads_email */
 		$args['email'] = $args['wpleads_email_address'];
 
-		/* loop through and remove wpleads_ (we will add them back in the new method ) */
-		foreach ($args as $key => $value) {
-			$newkey = str_replace( 'wpleads_', '', $key );
-			unset($args[$key]);
-			$args[$newkey] = $value;
-		}
-
 		/* Send data through new method */
 		$Leads = new LeadStorage();
 		if ($return) {
@@ -739,7 +786,7 @@ if (!function_exists('inbound_add_conversion_to_lead')) {
 			$lead_data['wordpress_date_time'] = date("Y-m-d G:i:s T", $time);
 			$conversion_data = get_post_meta( $lead_id, 'wpleads_conversion_data', TRUE );
 			$conversion_data = json_decode($conversion_data,true);
-			$variation = $lead_data['variation'];
+			$variation = (isset($lead_data['variation'])) ? $lead_data['variation']:0;
 
 			if ( is_array($conversion_data)) {
 				$c_count = count($conversion_data) + 1;

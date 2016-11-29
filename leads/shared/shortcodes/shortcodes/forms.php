@@ -43,8 +43,8 @@ $shortcodes_config['forms'] = array(
                     'std' => 'redirect'
         ),*/
         'redirect' => array(
-            'name' => __('Redirect URL<span class="small-required-text">*</span>', 'inbound-pro' ),
-            'desc' => __('Where do you want to send people after they fill out the form? Please note: http:// is required.', 'inbound-pro' ),
+            'name' => __('Redirect URL', 'inbound-pro' ),
+            'desc' => __('Where do you want to send people after they fill out the form? Please note: http:// is required. Leave blank to prevent redirection.', 'inbound-pro' ),
             'type' => 'text',
             'placeholder' => "http://www.yoursite.com/thank-you",
             'std' => '',
@@ -380,10 +380,10 @@ if (!function_exists('inbound_forms_cpt')) {
             'publicly_queryable' => false,
             'show_ui' => true,
             'query_var' => true,
-            'show_in_menu'  => false,
+            'show_in_menu'  => true,
             'capability_type' => 'post',
             'hierarchical' => false,
-            'menu_position' => null,
+            'menu_position' => 34,
             'supports' => array('title','custom-fields', 'editor')
         );
 
@@ -440,18 +440,6 @@ if (is_admin()) {
                     echo $count;
                     break;
             }
-        }
-    }
-}
-
-add_action('admin_init', 'inbound_forms_redirect');
-if (!function_exists('inbound_forms_redirect')) {
-    function inbound_forms_redirect($value){
-        global $pagenow;
-        $page = (isset($_REQUEST['page']) ? sanitize_text_field($_REQUEST['page']) : false);
-        if($pagenow=='edit.php' && $page=='inbound-forms-redirect'){
-            wp_redirect(get_admin_url().'edit.php?post_type=inbound-forms');
-            exit;
         }
     }
 }
@@ -707,11 +695,38 @@ if (!function_exists('inbound_form_get_data')) {
             $shortcode = get_post_meta( $post_ID, 'inbound_shortcode', TRUE );
             $inbound_form_values = get_post_meta( $post_ID, 'inbound_form_values', TRUE );
 
+		
+			/**get stored email response info. Mainly used when selecting a form starting template**/
+			$send_email = get_post_meta( $post_ID, 'inbound_email_send_notification', true);//yes/no select send response email
+			$send_email = '&inbound_email_send_notification=' . $send_email;//format the data into a string which fill_form_fields() over in shortcodes.js will use to fill in the field
+	
+			$email_template_id = get_post_meta( $post_ID, 'inbound_email_send_notification_template', true );// email template id, or 'custom' email flag
+
+			/*if a custom email response is to be used, custom will be true*/
+			if($email_template_id == 'custom'){
+				$content = get_post($post_ID); //the email is contained in the post content
+				$content = $content->post_content;
+				$custom_email_response = '&content=' . $content;	
+				
+				$custom_email_subject = get_post_meta( $post_ID, 'inbound_confirmation_subject', true ); //the subject is in the meta
+				$custom_email_subject = '&inbound_confirmation_subject=' . $custom_email_subject;
+			}else{
+				$custom_email_response = '';
+				$custom_email_subject = '';
+			}
+
+			$email_template_id = '&inbound_email_send_notification_template=' . $email_template_id;
+			
+			/*concatenate into a big string and add it to $inbound_form_values*/
+			$inbound_form_values .= ($send_email . $email_template_id . $custom_email_response . $custom_email_subject);
+			
+			
             /*   update_post_meta( $post_ID, 'inbound_form_created_on', $page_id );
                 update_post_meta( $post_ID, 'inbound_shortcode', $shortcode );
                 update_post_meta( $post_ID, 'inbound_form_values', $form_values );
                 update_post_meta( $post_ID, 'inbound_form_field_count', $field_count );
             */
+		
             $output =  array('inbound_shortcode'=> $shortcode,
                 'field_count'=>$field_count,
                 'form_settings_data' => $form_settings_data,
