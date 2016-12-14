@@ -111,19 +111,21 @@ var popmeup = false;
 		    $('#wpvq-page-' + wpvq_currentPage).show();
 		    $('.wpvq_bar_container_top').show();
 		    $('.last').show(); 
+		    $("#wpvq-ask-before-results").hide();
         } else {
-            $("#wpvq-ask-before-results").show();
-            $('.wpvq_bar_container_top').hide();
-            $('.first').show();
-            $("#bikinitesten").find(":submit").attr('value', 'Start test >>');
-            $("#bikinitesten").find(":submit").html('Start test >>');
+           
+            $("#wpvq-ask-before-results").hide();
+            $('#wpvq-page-' + wpvq_currentPage).show();
+            $('.wpvq_bar_container_top').show();
+            $('.last').show(); 
         }
-        
+
           
 // add target to Inbound form
 			$('.inbound-now-form').attr('target','getandhide');
 			
 // Inbound form	
+			
 			$('.inbound-now-form').on('submit', function(e) {
 			
 			var email_field = $('#wpleads_email_address').val();
@@ -156,7 +158,7 @@ var popmeup = false;
 			}
 			}
 			}	
-            });    		 
+            });   		 
         
 		// CLICK ON ANSWER : TRUE-FALSE QUIZ
 		var countTrueAnswer = $('.wpvq-question input:checked').length;
@@ -440,7 +442,8 @@ var popmeup = false;
 
 			// You can hook something in JS if you need to exploit the form info
 			if (typeof wpvq_hook_askInformations == 'function') { 
-				wpvq_hook_askInformations(data);
+				 wpvq_hook_askInformations(data);
+			
 			}
 
 			// Function run when displaying results.
@@ -774,6 +777,7 @@ var popmeup = false;
 		 */
 		function wpvq_action_before_results(result)
 		{
+		
 			// Save game stats
 			var submitData 			=  { 'wpvq_quizId' : quizId, 'wpvq_ask_result' : result, 'beforeResults' : true };
 			var submitDataArray 	=  submitData; // keep an array version
@@ -807,15 +811,16 @@ var popmeup = false;
 			}
 
 // Get info from user
-			if (startthis == false) 
-			{ 
+			if (startthis == false) { 
 				// If ForceToShare + AskInfo, forceToShare first.
 				if (!forceToShare) {
 					$('#wpvq-ask-before-results').show(400, function(){
 						$('#wpvq-general-results').hide(400, function(){ wpvq_scrollToQuizEnd(); });
 					});
 				}
-			}
+			} 
+			
+			
 
 			// Run hook if no action before results
 			if (startthis == true) {
