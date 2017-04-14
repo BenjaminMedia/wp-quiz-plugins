@@ -2,8 +2,8 @@ var PopupFeed;
 var openDialogFB;
 var popmeup = false;
 
-(function($) 
-{ 
+(function($)
+{
 
 	if (wpvq_front_quiz)
 	{
@@ -28,7 +28,7 @@ var popmeup = false;
 		    }, 1e3);
 		    return r;
 		}
-        
+
 		PopupFeed = function(e) {
 		    popmeup = false;
 		    uda = e;
@@ -37,24 +37,24 @@ var popmeup = false;
 
 
 		/**
-		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 *
 		 * 								EVENTS MAP
 		 * 								----------
-		 * 								
+		 *
 		 *
 		 * 		a — Init :
 		 * 			|| 1. Hide everything except page #1
-		 * 			
+		 *
 		 *
 		 * 		b — When people play :
 		 * 			|| 1. Trigger event on click answer
-	 	 * 			|| 2. Compute answer 
+	 	 * 			|| 2. Compute answer
 	 	 * 		 	||  	a) Trivia 		: check if true/false + visual feedback (ajax).
 	 	 * 			||  	b) Personality 	: save the choice (local).
 	 	 * 			|| 3. Switch page if we need
 	 	 * 			|| 4. Scroll to the next question if we want
-	 	 * 			
+	 	 *
 		 *
 		 * 		c — (on Ajax Callback) When answer = totalQuestions
 		 * 			|| 1. Compute answers
@@ -67,9 +67,9 @@ var popmeup = false;
 		 * 			||		b) Can show "ask info" form
 		 * 			||		c) JS hook wpvq_hook_beforeResults() for developers
 		 * 			|| 5. Show final area.
-		 * 				
-		 * 
-		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+		 *
+		 *
+		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 */
 
 		var wpvq_scroll_to_explanation  = false;				// prevent to scroll to far if there is an expl. between questions
@@ -81,7 +81,7 @@ var popmeup = false;
 		// Page management (browser refresh)
 		var wpvq_currentPage = 0;
 		var countQuestions = 0;
-		if (wpvq_refresh_page) 
+		if (wpvq_refresh_page)
 		{
 			var wpvq_currentPage = wpvq_browser_page;
 			wpvq_savedArrayToCheckedAnswers();
@@ -94,72 +94,72 @@ var popmeup = false;
 			}
 
 			if (wpvq_currentPage > 0) {
-				$(document).scrollTop( $(".wpvq").offset().top - 35 - wpvq_scroll_top_offset );  		
+				$(document).scrollTop( $(".wpvq").offset().top - 35 - wpvq_scroll_top_offset );
 			}
 		}
 
-		var wpvq_totalPages 			= wpvq_count_pages();	
-		var wpvq_block_pageChanging 	= false; 				// block page auto changing 
+		var wpvq_totalPages 			= wpvq_count_pages();
+		var wpvq_block_pageChanging 	= false; 				// block page auto changing
 		var wpvq_block_continue_button 	= false; 				// prevent double click on "continue" button
 		var wpvq_begin_new_page 		= false;				// (flag) detect new page, helpful for scroll management
 		wpvq_update_progress();
 
 // Pagination : show first page only at begining
 // By default, ALL PAGES are display=none
-		
+
 		if (startthis == false) {
 		    $('#wpvq-page-' + wpvq_currentPage).show();
 		    $('.wpvq_bar_container_top').show();
-		    $('.last').show(); 
+		    $('.last').show();
 		    $("#wpvq-ask-before-results").hide();
         } else {
-           
+
             $("#wpvq-ask-before-results").hide();
             $('#wpvq-page-' + wpvq_currentPage).show();
             $('.wpvq_bar_container_top').show();
-            $('.last').show(); 
+            $('.last').show();
         }
 
-          
+
 // add target to Inbound form
 			$('.inbound-now-form').attr('target','getandhide');
-			
-// Inbound form	
-			
+
+// Inbound form
+
 			$('.inbound-now-form').on('submit', function(e) {
-			
+
 			var email_field = $('#wpleads_email_address').val();
-             
-			   
-			if ($('#wpleads_first_name').val() != "" && $('#wpleads_last_name').val() != "" && $('#wpleads_email_address').val() != "" && $('#wpleads_mobile_phone').val() != "" ) {  
-			
-			if( /(.+)@(.+){2,}\.(.+){2,}/.test(email_field)){  
+
+
+			if ($('#wpleads_first_name').val() != "" && $('#wpleads_last_name').val() != "" && $('#wpleads_email_address').val() != "" && $('#wpleads_mobile_phone').val() != "" ) {
+
+			if( /(.+)@(.+){2,}\.(.+){2,}/.test(email_field)){
 			 if ($('input.mainpermission').is(':checked')) {
 
 			   $('.iw-firstname').val($(".firstname").val());
 			   $('.iw-lastname').val($(".lastname").val());
                $('.iw-e-mail').val($(".e-mail").val());
                $('.iw-phonenumber').val($(".phonenumber").val());
-			   
-			   fbq('track', 'Lead'); 
+
+			   fbq('track', 'Lead');
 			   popmeup = true;
-			   
+
 			    if (startthis == false) {
-                 $('#wpvq-general-results').show(function() {   
+                 $('#wpvq-general-results').show(function() {
                  $(".overlay-win").show();
 				      $('#wpvq-ask-before-results').hide(function() {  /*wpvq_scrollToQuizEnd();*/ $('#showpopup').click(); });
 				 });
-				} 
+				}
 				if (startthis == true) {
-				  $('#wpvq-page-0').show(function() { 
+				  $('#wpvq-page-0').show(function() {
 				      $('#wpvq-ask-before-results').hide(function() { /*$(document).scrollTop( $(".wpvq").offset().top - 35 - wpvq_scroll_top_offset );*/ $('#showpopup').click(); });
 				  });
 				}
 			}
 			}
-			}	
-            });   		 
-        
+			}
+            });
+
 		// CLICK ON ANSWER : TRUE-FALSE QUIZ
 		var countTrueAnswer = $('.wpvq-question input:checked').length;
 
@@ -171,13 +171,13 @@ var popmeup = false;
 		// If there is a squeeze page
 		$('.wpvq-start-quiz').click(function() {
 			$(this).fadeOut(500, function(){ $('.wpvq').fadeIn(); });
-		});	
+		});
 
 	 	// Useful for hideRightWrong
 	 	var rightAnswerCssClass = 'wpvq-answer-true' + ((wpvq_hideRightWrong) ? '-hideRightWrong':'');
 		var wrongAnswerCssClass = 'wpvq-answer-false' + ((wpvq_hideRightWrong) ? '-hideRightWrong':'');
 
-		$('.TrueFalse .wpvq-answer').click(function() 
+		$('.TrueFalse .wpvq-answer').click(function()
 		{
 			var $answer 		=  $(this);
 			var $parent 		=  $(this).parent();
@@ -194,19 +194,19 @@ var popmeup = false;
 			if ($answer.data('wpvq-answer') == wpvq_lastClicked) { return; }
 			wpvq_lastClicked = $answer.data('wpvq-answer');
 
-			if($parent.find('.wpvq-choose').length == 0) 
+			if($parent.find('.wpvq-choose').length == 0)
 			{
 				$answer.find('input').attr('checked', 'checked');
 				$(this).addClass('wpvq-choose');
 
 				var answerId = new String( $(this).data('wpvq-answer') );
-				if(wpvq_ans89733[key_answers][answerId] == 1) 
+				if(wpvq_ans89733[key_answers][answerId] == 1)
 				{
 					$answer.addClass(rightAnswerCssClass);
 					isRightAnswer = true;
 					countTrueAnswer++;
 				}
-				else 
+				else
 				{
 					$answer.addClass(wrongAnswerCssClass);
 					isRightAnswer = false;
@@ -225,7 +225,7 @@ var popmeup = false;
 					} else {
 						$parent.find('div.wpvq-explaination div.wpvq-false').show();
 					}
-					
+
 					// wpvq-explaination-content-empty BECOMES wpvq-explaination-content, if not empty
 					// Useful for hideRightWrong
 					$parent.find('div.wpvq-explaination p.wpvq-explaination-content-empty').addClass('wpvq-explaination-content');
@@ -281,7 +281,7 @@ var popmeup = false;
 		var personalitiesWeight  = [];
 		var maxWeight   		 = 0;
 		var personalityTestEnded = false;
-		$('.Personality .wpvq-answer').click(function() 
+		$('.Personality .wpvq-answer').click(function()
 		{
 			var $answer = $(this);
 			var $parent = $(this).parent();
@@ -300,15 +300,16 @@ var popmeup = false;
 				$parent.find('.wpvq-choose').removeClass('wpvq-choose');
 				$parent.find('input').prop('checked', false);
 			}
-			
+
 			// when question needs an answer
-			if($parent.find('.wpvq-choose').length == 0) 
+			if($parent.find('.wpvq-choose').length == 0)
 			{
 				$answer.find('input').prop('checked', true);
 				$(this).addClass('wpvq-choose');
 
-				// Count checked inputs 
-				countQuestions = $('.wpvq-question input:checked').length;
+				// Count checked inputs
+				// countQuestions = $('.wpvq-question input:checked').length;
+				countQuestions = $('.wpvq-choose').length;
 
 				// Scroll to the next question
 				// But not for the last answer
@@ -336,12 +337,12 @@ var popmeup = false;
 
 
 		// Switch page between questions if we need ("continue button")
-		$('.wpvq-next-page-button').click(function() 
+		$('.wpvq-next-page-button').click(function()
 		{
 			wpvq_block_pageChanging = false;
 
 			// Prevent from double click
-			if (!wpvq_block_continue_button) 
+			if (!wpvq_block_continue_button)
 			{
 				wpvq_block_continue_button = true;
 				var changePage = wpvq_change_page($(this).parents('.wpvq-question'), 0);
@@ -350,7 +351,7 @@ var popmeup = false;
 				}
 			}
 
-			if (countQuestions == totalCountQuestions) 
+			if (countQuestions == totalCountQuestions)
 			{
 				wpvq_concludeQuiz(wpvq_type);
 			}
@@ -359,7 +360,7 @@ var popmeup = false;
 		/**
 		 * Open Twitter share on a popup window
 		 */
-		$('.wpvq-twitter-share-popup').click(function(event) 
+		$('.wpvq-twitter-share-popup').click(function(event)
 		{
 			var width  = 575,
 			    height = 400,
@@ -379,7 +380,7 @@ var popmeup = false;
 		/**
 		 * Open G+ share on a popup window
 		 */
-		$('.wpvq-gplus-share-popup').click(function(event) 
+		$('.wpvq-gplus-share-popup').click(function(event)
 		{
 			var width  = 575,
 			    height = 450,
@@ -399,7 +400,7 @@ var popmeup = false;
 		/**
 		 * When people submit their info (nickname, email....)
 		 */
-		
+
 		// Click on "ignore & see my results"
 		var wpvq_ignoreForm = false;
 		$('.wpvq-ignore-askInfo').click(function(){
@@ -407,8 +408,8 @@ var popmeup = false;
 		});
 
 		// Submit form OR ignore form
-		$('button#wpvq-submit-informations, .wpvq-ignore-askInfo').click(function(e) 
-		{	
+		$('button#wpvq-submit-informations, .wpvq-ignore-askInfo').click(function(e)
+		{
 			if (askEmail && !wpvq_ignoreForm) {
 				if( $('input[name=wpvq_askEmail]').val() == '' || (wpvq_checkMailFormat && !wpvq_isEmail($('input[name=wpvq_askEmail]').val())) ) {
 					alert(i18n_wpvq_needEmailAlert);
@@ -431,19 +432,19 @@ var popmeup = false;
 			var data = $('form#wpvq-form-informations').serialize();
 			$.post(
 				ajaxurl,
-				{ 'action': 'submit_informations', 'data': data }, 
-				function(response) 
+				{ 'action': 'submit_informations', 'data': data },
+				function(response)
 				{
-					$('#wpvq-general-results').show(400, function() { 
-						$('#wpvq-ask-before-results').hide(400, function() { wpvq_scrollToQuizEnd(); }); 
+					$('#wpvq-general-results').show(400, function() {
+						$('#wpvq-ask-before-results').hide(400, function() { wpvq_scrollToQuizEnd(); });
 					});
 				}
 			);
 
 			// You can hook something in JS if you need to exploit the form info
-			if (typeof wpvq_hook_askInformations == 'function') { 
+			if (typeof wpvq_hook_askInformations == 'function') {
 				 wpvq_hook_askInformations(data);
-			
+
 			}
 
 			// Function run when displaying results.
@@ -451,7 +452,7 @@ var popmeup = false;
 		});
 
 		// Ignore share when Facebook API is misconfigured
-		$('.wpvq-facebook-ignore-share').click(function() 
+		$('.wpvq-facebook-ignore-share').click(function()
 		{
 			$('#wpvq-general-results').show();
 			$('#wpvq-ask-before-results').hide();
@@ -461,8 +462,8 @@ var popmeup = false;
 			wpvq_hook_show_results();
 		});
 		// Skip Facebook Share, even when Facebook is blocked
-		$('.wpvq-facebook-share-button.wpvq-facebook-noscript.wpvq-js-loop').click(function() 
-		{  
+		$('.wpvq-facebook-share-button.wpvq-facebook-noscript.wpvq-js-loop').click(function()
+		{
 			$('#wpvq-forceToShare-before-results').hide();
 	        if (askEmail || askNickname) {
 	        	$('#wpvq-ask-before-results').show();
@@ -475,15 +476,15 @@ var popmeup = false;
 
 
 		/**
-		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 *
 		 * 									SNIPPETS
 		 * 									--------
-		 * 									
+		 *
 		 *
 		 * 		wpvq_autoscroll_next() : void
 		 * 			Scroll to the next question
-		 * 			
+		 *
 		 * 		wpvq_findPictureUrls() : array
 		 * 			Extract Picture URLs from text
 		 *
@@ -501,7 +502,7 @@ var popmeup = false;
 		 *
 		 * 		wpvq_hook_show_results() : void
 		 * 			Hook useful function when displaying results
-		 * 			
+		 *
 		 * 		wpvq_action_before_results() : void
 		 * 			Hook useful function when quiz finished
 		 *
@@ -513,11 +514,11 @@ var popmeup = false;
 		 *
 		 * 		wpvq_count_pages() : int
 		 * 			Count number of pages
-		 * 
-		 * 
-		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+		 *
+		 *
+		 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		 */
-		
+
 		// Tools : base64 encode/decode
 		var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
 
@@ -543,14 +544,14 @@ var popmeup = false;
 
 				$.post(
 					ajaxurl,
-					{ 'action': 'choose_personality', 'weight': maxWeight }, 
-					function(response) 
+					{ 'action': 'choose_personality', 'weight': maxWeight },
+					function(response)
 					{
 						$('div#wpvq-big-loader').fadeOut();
 
 						personalityTestEnded = true;
 						var responseArray = $.parseJSON(response);
-						
+
 						// json string to json array + test answer
 						var responseArray 		=  $.parseJSON(response);
 						var personalityLabel 	=  responseArray.label;
@@ -561,7 +562,7 @@ var popmeup = false;
 						wpvq_global_results.resultValue = maxWeight;
 
 						// useful to ask info, else useless.
-						$('input#wpvq_ask_result').val(personalityLabel); 
+						$('input#wpvq_ask_result').val(personalityLabel);
 
 						// Replace ahref, meta, ...
 						jQuery.wpvq_add_social_meta('Personality', personalityLabel, personalityContent);
@@ -572,15 +573,15 @@ var popmeup = false;
 						$('#wpvq-final-personality').show('slow', function(){ wpvq_scrollToQuizEnd(); });
 					}
 				);
-			} 
+			}
 			else if (quizType == 'WPVQGameTrueFalse')
 			{
 				// Loader for personality result block
 				$('div#wpvq-big-loader').fadeIn(200);
 
-				$.post( 
+				$.post(
 					ajaxurl,
-					{ 'action': 'get_truefalse_appreciation', 'score': countTrueAnswer, 'quizId': quizId }, 
+					{ 'action': 'get_truefalse_appreciation', 'score': countTrueAnswer, 'quizId': quizId },
 					function(response)
 					{
 						$('div#wpvq-big-loader').fadeOut();
@@ -601,7 +602,7 @@ var popmeup = false;
 
 						// Replace ahref, meta, ...
 						jQuery.wpvq_add_social_meta('TrueFalse', countTrueAnswer, responseArray['appreciationContent']);
-						
+
 						wpvq_action_before_results(countTrueAnswer);
 
 						$('#wpvq-final-score').show('slow', function(){ wpvq_scrollToQuizEnd(); });
@@ -617,12 +618,12 @@ var popmeup = false;
 		{
 			// Don't scroll if last question of a page with explanation to show
 			if (wpvq_autoscroll_next_var && !wpvq_block_pageChanging && !wpvq_scroll_to_explanation) {
-				$('html, body').animate( { scrollTop: $questionSelector.next().offset().top - 35 - wpvq_scroll_top_offset }, wpvq_scroll_speed );	
+				$('html, body').animate( { scrollTop: $questionSelector.next().offset().top - 35 - wpvq_scroll_top_offset }, wpvq_scroll_speed );
 			}
 
 			// Scroll to the explanation if there is one.
 			if (wpvq_autoscroll_next_var && wpvq_scroll_to_explanation) {
-				$('html, body').animate( { scrollTop: $questionSelector.find('.wpvq-explaination').offset().top - 35 - wpvq_scroll_top_offset }, wpvq_scroll_speed );	
+				$('html, body').animate( { scrollTop: $questionSelector.find('.wpvq-explaination').offset().top - 35 - wpvq_scroll_top_offset }, wpvq_scroll_speed );
 				wpvq_scroll_to_explanation = false;
 			}
 		}
@@ -644,12 +645,12 @@ var popmeup = false;
 		}
 
 		/**
-		 * Generate personalitiesWeight array before ajax 
+		 * Generate personalitiesWeight array before ajax
 		 * @param $elList = selector of checked answer (ie : $('.vq-css-checkbox:checked'))
 		 * @author Bogdan Petru Pintican (bogdan.pintican@netlogiq.ro)
 		 * @website http://www.netlogiq.ro
-		 */	
-		function wpvq_groupPointsByPersonality( $elList ) 
+		 */
+		function wpvq_groupPointsByPersonality( $elList )
 		{
 			var dataAnswers = [],
 				personalitiesWeight = {}; // should be an object
@@ -659,7 +660,7 @@ var popmeup = false;
 			{
 				var answerId = $(this).attr('data-wpvq-answer');
 				var $answerDiv = $(document).find('.wpvq-answer[data-wpvq-answer='+answerId+']');
-				
+
 				$answerDiv.find('input.wpvq-appreciation').each(function() {
 					var appreciationId 	= $(this).attr('data-appreciationId');
 					var multiplier 		= $(this).val();
@@ -682,13 +683,13 @@ var popmeup = false;
 		 */
 		function wpvq_getMax(myArray, randomIfEgal)
 		{
-			var maxPersonalityId = 0, 
+			var maxPersonalityId = 0,
 				maxPersonalityWeight = 0,
 				forceReplacement = false;
 
-			$.each(myArray, function(index, elem) 
+			$.each(myArray, function(index, elem)
 			{
-				if (elem > maxPersonalityWeight) 
+				if (elem > maxPersonalityWeight)
 				{
 					maxPersonalityId 		= index;
 					maxPersonalityWeight 	= elem;
@@ -697,7 +698,7 @@ var popmeup = false;
 				else if (elem == maxPersonalityWeight && randomIfEgal)
 				{
 					var randNum = parseInt(Math.random() * 4);
-					if (randNum%2 == 0 || maxPersonalityId == 0 /* prevent from empty result */) 
+					if (randNum%2 == 0 || maxPersonalityId == 0 /* prevent from empty result */)
 					{
 						maxPersonalityId 		= index;
 						maxPersonalityWeight 	= elem;
@@ -726,17 +727,17 @@ var popmeup = false;
 		function wpvq_hook_show_results()
 		{
 			// Redirect to another result page (quiz setting)
-			if (wpvq_redirection_page != '') 
+			if (wpvq_redirection_page != '')
 			{
 				$('.wpvq').html(''); // don't display result
 
 				// Encoded results
 				var paramRedirection = '' + Base64.encode( JSON.stringify(wpvq_global_results) );
 				var newUrl = addParam(wpvq_redirection_page, 'wpvqdataresults', paramRedirection);
-				
+
 				// Param containing raw results, to be compatible with old version
 				var newUrl = addParam(newUrl, 'wpvqresults', wpvq_global_result);
-				
+
 				window.location = newUrl;
 				return;
 			}
@@ -777,32 +778,32 @@ var popmeup = false;
 		 */
 		function wpvq_action_before_results(result)
 		{
-		
+
 			// Save game stats
 			var submitData 			=  { 'wpvq_quizId' : quizId, 'wpvq_ask_result' : result, 'beforeResults' : true };
 			var submitDataArray 	=  submitData; // keep an array version
 			submitData 				=  $.param(submitData);
-            
+
             // code/ads above results
 			$('.wpvq-bloc-addBySettings-top').show();
             $('#wpleads_result').val(result);
-            
-			
+
+
 			// You can hook something in JS
-			if (typeof wpvq_hook_beforeResults == 'function') { 
+			if (typeof wpvq_hook_beforeResults == 'function') {
 
 				wpvq_hook_beforeResults(submitDataArray);
-				
+
 			}
- 		
-	
+
+
 		    $.post(
 				ajaxurl,
-				{ 'action': 'submit_informations', 'data': submitData }, 
+				{ 'action': 'submit_informations', 'data': submitData },
 				function(response) {  }
-			); 
-			
-            
+			);
+
+
 			// Hide results with ForceToShare
 			if (forceToShare) {
 				$('#wpvq-forceToShare-before-results').show(400, function(){
@@ -811,16 +812,16 @@ var popmeup = false;
 			}
 
 // Get info from user
-			if (startthis == false) { 
+			if (startthis == false) {
 				// If ForceToShare + AskInfo, forceToShare first.
 				if (!forceToShare) {
 					$('#wpvq-ask-before-results').show(400, function(){
 						$('#wpvq-general-results').hide(400, function(){ wpvq_scrollToQuizEnd(); });
 					});
 				}
-			} 
-			
-			
+			}
+
+
 
 			// Run hook if no action before results
 			if (startthis == true) {
@@ -835,7 +836,7 @@ var popmeup = false;
 		{
 			// Percentage for computing
 			var wpvq_percent_progress = parseInt( ( wpvq_currentPage * 100 ) / wpvq_totalPages );
-			
+
 			// Public content
 			var content;
 			if (wpvq_progressbar_content == 'none') {
@@ -845,12 +846,12 @@ var popmeup = false;
 			} else /*if (wpvq_progressbar_content == 'page')*/ {
 				content = parseInt(wpvq_currentPage) + ' / ' + wpvq_totalPages;
 			}
-			
+
 			// Display
 			if (wpvq_percent_progress == 0) {
 				$('.wpvq-page-progress .wpvq-progress-value').css('width', wpvq_percent_progress + '%');
 				$('.wpvq-page-progress .wpvq-progress-value').text(content);
-			} 
+			}
 			else {
 				$('.wpvq-progress-zero').html('');
 				$('.wpvq-page-progress .wpvq-progress-value').animate({width:wpvq_percent_progress + '%'}, 800);
@@ -860,7 +861,7 @@ var popmeup = false;
 			// Scroll to top auto for the page > 0
 			var isNextPageEmpty = ($.trim($('#wpvq-page-' + wpvq_currentPage).html()).length == 0) ;
 			if (!wpvq_refresh_page && wpvq_autoscroll_next_var && wpvq_currentPage > 0 && wpvq_percent_progress != 100 && !isNextPageEmpty) {
-				$('html, body').animate( { scrollTop: $('#wpvq-page-' + wpvq_currentPage).offset().top - 70 - wpvq_scroll_top_offset }, wpvq_scroll_speed );	
+				$('html, body').animate( { scrollTop: $('#wpvq-page-' + wpvq_currentPage).offset().top - 70 - wpvq_scroll_top_offset }, wpvq_scroll_speed );
 			}
 		}
 
@@ -898,7 +899,7 @@ var popmeup = false;
 				// Do not hide the last page
 				// Condition matches at the end of the quiz (last question, last page)
 				var isTherePageAfter = $parent.attr('data-pageAfter');
-				if (isTherePageAfter == 'false') 
+				if (isTherePageAfter == 'false')
 				{
 					wpvq_currentPage++;
 					wpvq_update_progress();
@@ -917,9 +918,9 @@ var popmeup = false;
 				// Next page empty
 				// hide questions and just display results + 1 progress bar
 				var isNextPageEmpty = ($.trim($('#wpvq-page-' + (wpvq_currentPage+1)).html()).length == 0);
-				if (isNextPageEmpty) 
+				if (isNextPageEmpty)
 				{
-					if (wpvq_refresh_page) 
+					if (wpvq_refresh_page)
 					{
 						wpvq_currentPage++;
 						var wpvq_urlParam = wpvq_answersToUrl();
@@ -927,20 +928,20 @@ var popmeup = false;
 						  window.location = wpvq_refresh_url.replace('%%wpvqas%%', wpvq_urlParam);
 						}, waitBeforeChanging);
 						return 0;
-					} 
-					else 
+					}
+					else
 					{
 						$('#wpvq-page-' + wpvq_currentPage).fadeOut(function(){
 							$('.wpvq_bar_container_bottom').hide();
 							wpvq_currentPage++;
-							wpvq_update_progress();	
+							wpvq_update_progress();
 						});
 					}
 					return 1;
 				}
 
 				// Change page !
-				if (wpvq_refresh_page) 
+				if (wpvq_refresh_page)
 				{
 					wpvq_currentPage++;
 					var wpvq_urlParam = wpvq_answersToUrl();
@@ -975,7 +976,7 @@ var popmeup = false;
 			// Step 0 : associative array
 			var wpvq_answersObj = { 'wpvqas' : wpvq_answers, 'wpvqn' : wpvq_currentPage, 'wpvqcq' : countQuestions };
 
-			// Step 1 : object to string 
+			// Step 1 : object to string
 			wpvq_answersObj = $.param(wpvq_answersObj);
 
 			// Step 2 : base encode64
@@ -988,13 +989,13 @@ var popmeup = false;
 		{
 			var array = [];
 
-			if (wpvq_type == 'WPVQGamePersonality') 
+			if (wpvq_type == 'WPVQGamePersonality')
 			{
 				$('.vq-css-checkbox:checked').each(function(){
 					array.push($(this).attr('data-wpvq-answer'));
 				});
 			}
-			else if (wpvq_type == 'WPVQGameTrueFalse') 
+			else if (wpvq_type == 'WPVQGameTrueFalse')
 			{
 				$('.wpvq-choose.wpvq-answer-true, .wpvq-choose.wpvq-answer-true-hideRightWrong').each(function(){
 					array.push($(this).attr('data-wpvq-answer'));
@@ -1007,7 +1008,7 @@ var popmeup = false;
 		// Convert answer given to URL to checked box ingame
 		function wpvq_savedArrayToCheckedAnswers()
 		{
-			$.each(wpvq_answersStatus, function(key, value) 
+			$.each(wpvq_answersStatus, function(key, value)
 			{
 				// Generic : check the box related to the question
 				$('input.vq-css-checkbox[data-wpvq-answer='+value+']').attr('checked','checked');
@@ -1071,12 +1072,12 @@ var popmeup = false;
 		 * @param  {[type]} value [description]
 		 * @return {[type]}       [description]
 		 */
-		function addParam(url, param, value) 
+		function addParam(url, param, value)
 		{
 		   var a = document.createElement('a'), regex = /(?:\?|&amp;|&)+([^=]+)(?:=([^&]*))*/gi;
 		   var params = {}, match, str = []; a.href = url;
 		   while (match = regex.exec(a.search))
-		       if (encodeURIComponent(param) != match[1]) 
+		       if (encodeURIComponent(param) != match[1])
 		           str.push(match[1] + (match[2] ? "=" + match[2] : ""));
 		   str.push(encodeURIComponent(param) + (value ? "=" + encodeURIComponent(value) : ""));
 		   a.search = str.join("&");
@@ -1089,11 +1090,11 @@ var popmeup = false;
 	 * 	       GLOBAL
 	 * ########################
 	 */
-	
+
 	/**
-	 * A utility function to find all _picture_ URLs 
+	 * A utility function to find all _picture_ URLs
 	 * and return them in an array.  Note, the URLs returned are exactly as found in the text.
-	 * 
+	 *
 	 * @param text the text to be searched.
 	 * @return an array of URLs.
 	 */
@@ -1162,18 +1163,18 @@ var popmeup = false;
 
 		// VK Share button
 		if (typeof VK != 'undefined' && typeof VK.Share.button != 'undefined') {
-			var vkButton = VK.Share.button({ 
-				url: wpvq_share_url, 
-				title: wpvq_facebook_caption, 
-				description: wpvq_facebook_description,  
-				image: wpvq_facebook_picture, 
+			var vkButton = VK.Share.button({
+				url: wpvq_share_url,
+				title: wpvq_facebook_caption,
+				description: wpvq_facebook_description,
+				image: wpvq_facebook_picture,
 				noparse: true
 			}, {type: 'custom', text: '<div class="wpvq-social-vk wpvq-social-button"><i class="wpvq-social-icon"><i class="fa fa-vk"></i></i><div class="wpvq-social-slide"><p>VK</p></div></div>'});
 			$('.wpvq-vk-share-content').html(vkButton);
 		}
-		
+
 		// Prepare social share link (for social media with simple <a href> share tools [Twitter, G+])
-		$('a.wpvq-js-loop').each(function() 
+		$('a.wpvq-js-loop').each(function()
 		{
 			var ahref 	=  $(this).attr('href');
 			ahref 		=  ahref.replace(tag, tagValue);
