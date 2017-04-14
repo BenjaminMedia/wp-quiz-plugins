@@ -308,7 +308,8 @@ var popmeup = false;
 				$(this).addClass('wpvq-choose');
 
 				// Count checked inputs 
-				countQuestions = $('.wpvq-question input:checked').length;
+				// countQuestions = $('.wpvq-question input:checked').length;
+        countQuestions = $('.wpvq-choose').length;
 
 				// Scroll to the next question
 				// But not for the last answer
