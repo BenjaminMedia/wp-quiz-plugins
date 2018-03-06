@@ -1,0 +1,13 @@
+{
+    "config": {
+        "vendor-dir": "includes/vendor"
+    },
+
+    "require": {
+    	"htmlburger/carbon-fields": "^2.1.1-beta.5",
+        "aweber/aweber": "dev-master",
+        "pacely/mailchimp-api-v3": "dev-master",
+        "activecampaign/api-php": "1.0.0",
+        "yahnis-elsts/plugin-update-checker": "dev-master"
+    }
+}
